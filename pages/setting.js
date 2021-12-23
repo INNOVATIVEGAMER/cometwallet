@@ -30,6 +30,8 @@ export default function Setting() {
   }, [globalState.state.user]);
 
   const deleteAccount = async (token) => {
+    console.log(token);
+    console.log(globalState);
     try {
       await api.delete("/users/me", {
         headers: { Authorization: `Bearer ${token}` },
