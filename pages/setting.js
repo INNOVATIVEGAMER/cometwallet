@@ -1,6 +1,5 @@
-import RouteLink from "next/link";
 import { styled } from "@mui/material/styles";
-import { Box, Card, Link, Container, Typography, Button } from "@mui/material";
+import { Box, Container, Typography, Button } from "@mui/material";
 import { useContext, useEffect } from "react";
 import AppContext from "../AppContext";
 import { useRouter } from "next/router";
@@ -32,10 +31,12 @@ export default function Setting() {
 
   const deleteAccount = async () => {
     try {
-      await api.delete("/users/me", {
-        headers: { Authorization: `Bearer ${globalState.state.user?.token}` },
-      });
-      router.push("/register");
+      if (globalState.state.user) {
+        await api.delete("/users/me", {
+          headers: { Authorization: `Bearer ${globalState.state.user.token}` },
+        });
+        router.push("/register");
+      }
     } catch (error) {
       console.log(error);
     }
