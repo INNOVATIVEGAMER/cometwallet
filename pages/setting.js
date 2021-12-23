@@ -29,14 +29,12 @@ export default function Setting() {
     if (!globalState.state.user) router.push("/login");
   }, [globalState.state.user]);
 
-  const deleteAccount = async () => {
+  const deleteAccount = async (token) => {
     try {
-      if (globalState.state.user) {
-        await api.delete("/users/me", {
-          headers: { Authorization: `Bearer ${globalState.state.user.token}` },
-        });
-        router.push("/register");
-      }
+      await api.delete("/users/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      router.push("/register");
     } catch (error) {
       console.log(error);
     }
@@ -63,7 +61,9 @@ export default function Setting() {
               variant="contained"
               color="error"
               size="small"
-              onClick={deleteAccount}
+              onClick={() => {
+                deleteAccount(globalState.state.user?.token);
+              }}
             >
               Delete
             </Button>
