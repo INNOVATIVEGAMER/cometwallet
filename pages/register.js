@@ -29,7 +29,7 @@ export default function Register() {
               Get started absolutely free.
             </Typography>
             <Typography sx={{ color: "text.secondary" }}>
-              Free forever. No credit card needed.
+              Free forever | Developed By Prasad (IG)
             </Typography>
           </Box>
 
