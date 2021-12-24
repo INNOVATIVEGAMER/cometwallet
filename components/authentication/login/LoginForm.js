@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import AppContext from "../../../AppContext";
+import { toast } from "react-toastify";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -45,8 +46,11 @@ export default function LoginForm() {
         const res = await api.post("/users/login", dataToSend);
         globalState.setuser(res.data);
         router.push("/dashboard/app");
+        toast.success("! Sign In Successfull !");
       } catch (error) {
-        console.log(error);
+        toast.error(
+          error.response?.data ? error.response?.data : "Something went wrong!"
+        );
       }
     },
   });

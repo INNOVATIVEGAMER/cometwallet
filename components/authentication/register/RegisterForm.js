@@ -9,6 +9,7 @@ import { Stack, TextField, IconButton, InputAdornment } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import AppContext from "../../../AppContext";
 import api from "../../../db/backend";
+import { toast } from "react-toastify";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -51,8 +52,11 @@ export default function RegisterForm() {
         const res = await api.post("/users", dataToSend);
         globalState.setuser({ user: res.data.userDoc, token: res.data.token });
         router.push("/dashboard/app");
+        toast.success("! Registration Successfull !");
       } catch (error) {
-        console.log(error);
+        toast.error(
+          error.response?.data ? error.response?.data : "Something went wrong!"
+        );
       }
     },
   });

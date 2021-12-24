@@ -5,6 +5,7 @@ import AppContext from "../AppContext";
 import { useRouter } from "next/router";
 import { UpdateForm } from "../components/authentication/update";
 import api from "../db/backend";
+import { toast } from "react-toastify";
 
 const RootStyle = styled("div")(({ theme }) => ({
   [theme.breakpoints.up("md")]: {
@@ -35,13 +36,16 @@ export default function Setting() {
         headers: { Authorization: `Bearer ${token}` },
       });
       router.push("/register");
+      toast.success("! Account Deleted !");
     } catch (error) {
-      console.log(error);
+      toast.error(
+        error.response?.data ? error.response?.data : "Something went wrong!"
+      );
     }
   };
 
   return (
-    <RootStyle title="Register | IG">
+    <RootStyle title="Setting | IG">
       <Container>
         <ContentStyle>
           <Box sx={{ mb: 5 }}>

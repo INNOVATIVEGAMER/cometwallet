@@ -9,6 +9,7 @@ import { Stack, TextField, IconButton, InputAdornment } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import AppContext from "../../../AppContext";
 import api from "../../../db/backend";
+import { toast } from "react-toastify";
 
 export default function UpdateForm(props) {
   const router = useRouter();
@@ -16,44 +17,46 @@ export default function UpdateForm(props) {
   const globalState = useContext(AppContext);
 
   const UpdateSchema = Yup.object().shape({
-    firstName: Yup.string()
-      .min(2, "Too Short!")
-      .max(50, "Too Long!")
-      .required("First name required"),
-    lastName: Yup.string()
-      .min(2, "Too Short!")
-      .max(50, "Too Long!")
-      .required("Last name required"),
-    email: Yup.string()
-      .email("Email must be a valid email address")
-      .required("Email is required"),
-    password: Yup.string()
-      .min(7, "Too Short!")
-      .required("Password is required"),
+    firstName: Yup.string().min(2, "Too Short!").max(50, "Too Long!"),
+    lastName: Yup.string().min(2, "Too Short!").max(50, "Too Long!"),
+    email: Yup.string().email("Email must be a valid email address"),
+    password: Yup.string().min(7, "Too Short!"),
   });
 
   const formik = useFormik({
     initialValues: {
       firstName: "",
       lastName: "",
-      email: "",
       password: "",
     },
     validationSchema: UpdateSchema,
     onSubmit: async (data) => {
-      const dataToSend = {
-        name: data.firstName + " " + data.lastName,
-        email: data.email,
-        password: data.password,
-      };
+      const dataToSend = {};
+      Object.keys(data).forEach((key) => {
+        if (data[key] !== "" && key !== "firstName" && key !== "lastName") {
+          dataToSend[key] = data[key];
+        } else if (data[key] !== "")
+          dataToSend.name = data.firstName + " " + data.lastName;
+      });
+
       try {
-        const res = await api.patch("/users/me", dataToSend, {
-          headers: { Authorization: `Bearer ${props.token}` },
-        });
-        globalState.setuser({ user: res.data });
-        router.push("/dashboard/app");
+        if (Object.keys(dataToSend).length !== 0) {
+          const res = await api.patch("/users/me", dataToSend, {
+            headers: { Authorization: `Bearer ${props.token}` },
+          });
+          globalState.setuser({
+            user: res.data,
+            token: globalState.state.user.token,
+          });
+          router.push("/dashboard/app");
+          toast.success("! Profile Updated !");
+        } else toast.error("At least enter one of the above fields");
       } catch (error) {
-        console.log(error);
+        toast.error(
+          error.response?.data?.error
+            ? error.response?.data?.error
+            : "Something went wrong!"
+        );
       }
     },
   });
@@ -81,16 +84,6 @@ export default function UpdateForm(props) {
               helperText={touched.lastName && errors.lastName}
             />
           </Stack>
-
-          <TextField
-            fullWidth
-            autoComplete="username"
-            type="email"
-            label="Email address"
-            {...getFieldProps("email")}
-            error={Boolean(touched.email && errors.email)}
-            helperText={touched.email && errors.email}
-          />
 
           <TextField
             fullWidth
